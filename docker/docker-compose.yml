@@ -1,0 +1,85 @@
+version: '3'
+
+#env_file: .env
+
+services:
+  #
+  # database
+  ################
+  db_lawyer:
+    image: 'mariadb:10.4'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DOCKER_MYSQL_PASSWORD}'
+    networks:
+      - lawyer_default
+    ports:
+      - '11002:3306'
+    volumes:
+      - db_lawyer_data:/var/lib/mysql
+    restart: always
+  redis_lawyer:
+    image: 'redis:4.0-alpine'
+    ports:
+      - '11003:6379'
+    networks:
+      - lawyer_default
+
+  #
+  # extra services
+  ################
+  mailcatcher:
+    image: mailhog/mailhog
+    ports:
+      - '11010:8025'
+    networks:
+      - lawyer_default
+
+  # phpmyadmin to help database access & manipulation
+  db_lawyer_phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DOCKER_MYSQL_PASSWORD}'
+    external_links:
+      - db_lawyer:db
+    depends_on:
+      - db_lawyer
+    networks:
+      - lawyer_default
+    ports:
+      - '11042:80'
+
+  #
+  # Lawyer app
+  ################
+  lawyer:
+    build:
+      context: './web'
+      args:
+        PHP_VERSION: ${PHP_VERSION}
+    external_links:
+      - db_lawyer:mysql
+      - redis_lawyer:redis
+    depends_on:
+      - db_lawyer
+      - mailcatcher
+      - redis_lawyer
+    networks:
+      - lawyer_default
+    ports:
+      - '${APACHE_HTTP_PORT}:80'
+    volumes:
+      - ${DOCKER_PATH_CODE}:/var/www/src/:cached
+      - ${DOCKER_PATH_CONFIG}:/var/www/src/shared:cached
+      - ${DOCKER_PATH_COMPOSER}:/var/www/src/composer:cached
+      - ./web/vhost/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+      - ./web/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+    environment:
+      PATH_TO_PUBLIC_WEBSITE: 'public'
+    stdin_open: true
+    tty: true
+
+volumes:
+  db_lawyer_data:
+
+networks:
+  lawyer_default:
