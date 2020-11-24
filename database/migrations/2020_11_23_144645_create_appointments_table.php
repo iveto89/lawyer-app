@@ -15,7 +15,7 @@ class CreateAppointmentsTable extends Migration
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('status_id')->unsigned();
+            $table->bigInteger('appointment_status_id')->unsigned();
             $table->bigInteger('citizen_id')->unsigned();
             $table->bigInteger('lawyer_id')->unsigned();
             $table->datetime('valid_from');
@@ -24,7 +24,7 @@ class CreateAppointmentsTable extends Migration
         });
 
         Schema::table('appointments', function (Blueprint $table) {
-            $table->foreign('status_id')->references('id')->on('appointment_statuses')->onUpdate('CASCADE')->onDelete('NO ACTION');
+            $table->foreign('appointment_status_id')->references('id')->on('appointment_statuses')->onUpdate('CASCADE')->onDelete('NO ACTION');
             $table->foreign('citizen_id')->references('id')->on('users')->onUpdate('CASCADE')->onDelete('NO ACTION');
             $table->foreign('lawyer_id')->references('id')->on('users')->onUpdate('CASCADE')->onDelete('NO ACTION');
         });
