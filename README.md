@@ -1,5 +1,4 @@
 ## System requirements
-- **php 7.4**
 - **docker**
 
 ### Docker setup
@@ -16,6 +15,8 @@ docker-compose up
 ```
 cd lawyer-app
 composer install
+npm install
+npm run dev
 ```
 
 - Create a DB named `laywer`
