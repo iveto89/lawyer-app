@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\Appointment;
 use App\Repositories\AppointmentRepository;
 use Illuminate\Database\Eloquent\Builder;
 
-class AppointmentService extends AbstractService
+class AppointmentService
 {
     /** @var AppointmentRepository */
     protected AppointmentRepository $appointmentRepository;
@@ -26,5 +27,14 @@ class AppointmentService extends AbstractService
     public function getAppointments(?string $searchText): Builder
     {
         return $this->appointmentRepository->getAppointments($searchText);
+    }
+
+    /**
+     * @param array $appointmentData
+     * @return Appointment
+     */
+    public function createAppointment(array $appointmentData): Appointment
+    {
+        return $this->appointmentRepository->createAppointment($appointmentData);
     }
 }

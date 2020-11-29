@@ -1,5 +1,4 @@
-ARG PHP_VERSION=""
-FROM php:${PHP_VERSION}-apache
+FROM php:7.4-apache
 
 # Install packages
 RUN apt-get update \

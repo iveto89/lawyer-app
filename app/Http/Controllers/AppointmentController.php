@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateAppointmentRequest;
 use App\Services\AppointmentService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
 {
@@ -28,22 +31,33 @@ class AppointmentController extends Controller
     /**
      * Show the form for creating a new resource.
      *
+     * @param UserService $userService
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(UserService $userService)
     {
-        //
+        $lawyers = $userService->getUsersByRoleDropdown('lawyer');
+
+        return view('appointments.create', [
+            'lawyers' => $lawyers,
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param CreateAppointmentRequest $createAppointmentRequest
+     * @param AppointmentService $appointmentService
+     * @return void
      */
-    public function store(Request $request)
+    public function store(CreateAppointmentRequest $createAppointmentRequest, AppointmentService $appointmentService)
     {
-        //
+        $requestData = $createAppointmentRequest->all();
+        $requestData['citizen_id'] = Auth::user()->getAuthIdentifier();
+
+        $appointmentService->createAppointment($requestData);
+
+        return redirect()->route('appointments.index')->with('success_message', 'Appointment successfully created.');
     }
 
     /**
@@ -65,7 +79,7 @@ class AppointmentController extends Controller
      */
     public function edit($id)
     {
-        //
+
     }
 
     /**

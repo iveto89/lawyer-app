@@ -10,6 +10,11 @@ class AppointmentStatus extends Model
 {
     use HasFactory;
 
+    const STATUS_REQUESTED = 'requested';
+    const STATUS_RESCHEDULED = 'rescheduled';
+    const STATUS_APPROVED = 'approved';
+    const STATUS_REJECTED = 'rejected';
+
     /**
      * @return HasMany
      */
