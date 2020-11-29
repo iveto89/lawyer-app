@@ -37,4 +37,13 @@ class AppointmentService
     {
         return $this->appointmentRepository->createAppointment($appointmentData);
     }
+
+    /**
+     * @param array $appointmentData
+     * @return bool
+     */
+    public function isAppointmentConflicting(array $appointmentData): bool
+    {
+        return $this->appointmentRepository->isAppointmentConflicting($appointmentData);
+    }
 }

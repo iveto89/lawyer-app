@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateAppointmentRequest;
+use App\Http\Requests\UpdateAppointmentRequest;
 use App\Services\AppointmentService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -55,9 +56,15 @@ class AppointmentController extends Controller
         $requestData = $createAppointmentRequest->all();
         $requestData['citizen_id'] = Auth::user()->getAuthIdentifier();
 
+        if ($appointmentService->isAppointmentConflicting($requestData)) {
+            return redirect()->route('appointments.create')
+                ->with('error_message', 'There is an appointment for the specified datetime. Please select another datetime range.');
+        }
+
         $appointmentService->createAppointment($requestData);
 
-        return redirect()->route('appointments.index')->with('success_message', 'Appointment successfully created.');
+        return redirect()->route('appointments.index')
+            ->with('success_message', 'Appointment successfully created.');
     }
 
     /**
@@ -89,7 +96,7 @@ class AppointmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateAppointmentRequest $updateAppointmentRequest, $id)
     {
         //
     }

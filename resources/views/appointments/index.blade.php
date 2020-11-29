@@ -60,7 +60,7 @@
                         @foreach($appointments as $appointment)
                             <tr class="bg-white border-4 border-gray-200">
                                 <td class="text-center">
-                                    <span class="text-center ml-2 font-semibold">{{$loop->index + 1}}</span>
+                                    <span class="text-center ml-2 font-semibold">{{$loop->iteration + $appointments->firstItem() - 1}}</span>
                                 </td>
                                 <td class="px-16 py-2 text-center">
                                     <span>{{$appointment->citizen->name}}</span>

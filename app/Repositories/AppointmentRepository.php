@@ -35,4 +35,16 @@ class AppointmentRepository extends AbstractRepository
 
         return Appointment::create($appointmentData);
     }
+
+    /**
+     * @param array $appointmentData
+     * @return bool
+     */
+    public function isAppointmentConflicting(array $appointmentData): bool
+    {
+        return Appointment::where('lawyer_id', $appointmentData['lawyer_id'])
+            ->where('valid_to', '>=', $appointmentData['valid_from'])
+            ->where('valid_from', '<=', $appointmentData['valid_to'])
+            ->exists();
+    }
 }
