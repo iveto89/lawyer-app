@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateAppointmentRequest;
 use App\Http\Requests\UpdateAppointmentRequest;
+use App\Models\Appointment;
 use App\Services\AppointmentService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -64,7 +65,42 @@ class AppointmentController extends Controller
         $appointmentService->createAppointment($requestData);
 
         return redirect()->route('appointments.index')
-            ->with('success_message', 'Appointment successfully created.');
+            ->with('success_message', 'Appointment created successfully.');
+    }
+
+    /**
+     * Update the status of an appointment.
+     *
+     * @param Request $request
+     * @param Appointment $appointment
+     * @param AppointmentService $appointmentService
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function review(
+        Request $request,
+        Appointment $appointment,
+        AppointmentService $appointmentService
+    )
+    {
+        if (auth()->user()->hasRole('lawyer') === false) {
+            return redirect()->route('appointments.index')
+                ->with('error_message', 'You don\'t have permissions to apply this action.');
+        }
+
+        if ($appointmentService->validateAppointmentStatus($appointment, $request->all()) === false) {
+            return redirect()->route('appointments.index')
+                ->with('error_message', 'You cannot update the appointment status.');
+        }
+
+        try {
+            $appointmentService->updateAppointmentStatus($appointment, $request->all());
+        } catch (\Exception $e) {
+            return redirect()->route('appointments.index')
+                ->with('error_message', 'You cannot update the appointment status.');
+        }
+
+        return redirect()->route('appointments.index')
+            ->with('success_message', 'Appointment updated successfully.');
     }
 
     /**

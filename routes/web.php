@@ -19,5 +19,7 @@ Route::get('/', function () {
 
 Route::group(['middleware' => 'auth'], function()
 {
+    Route::post('appointments/{appointment}/review', 'AppointmentController@review')->name('appointments.review');
+
     Route::resource('appointments', AppointmentController::class);
 });

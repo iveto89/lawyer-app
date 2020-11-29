@@ -81,12 +81,26 @@
                                     <span>{{$appointment->created_at->format('d/m/Y')}}</span>
                                 </td>
                                 <td class="max-w-sm md:max-w-lg text-center">
-                                    <a href="{{route('appointments.edit', ['appointment' => $appointment])}}"
-                                       class="bg-indigo-500 text-white px-4 py-2 border rounded-md hover:text-black"
-                                    >Edit</a>
-                                    <a href="{{route('appointments.destroy', ['appointment' => $appointment])}}" onclick="return confirm('Are you sure?')"
-                                       class="bg-red-500 text-white px-4 py-2 border rounded-md hover:text-black"
-                                    >Delete</a>
+                                    @role('citizen')
+                                        <a href="{{route('appointments.edit', ['appointment' => $appointment])}}"
+                                           class="bg-indigo-500 text-white px-4 py-2 border rounded-md hover:text-black"
+                                        >Edit</a>
+                                        <a href="{{route('appointments.destroy', ['appointment' => $appointment])}}" onclick="return confirm('Are you sure?')"
+                                           class="bg-red-500 text-white px-4 py-2 border rounded-md hover:text-black"
+                                        >Delete</a>
+                                    @endrole
+
+                                    @role('lawyer')
+                                        @if($appointment->appointment_status->name == App\Models\AppointmentStatus::STATUS_REQUESTED)
+                                            {!! Form::open(array('route' => ['appointments.review', 'appointment' => $appointment, 'status' => 'approved'], 'class' => 'form')) !!}
+                                                {!! Form::submit('Approve', ['class' => 'bg-indigo-500 text-white px-4 py-2 border rounded-md hover:text-black'] ) !!}
+                                            {{ Form::close() }}
+
+                                            {!! Form::open(array('route' => ['appointments.review', 'appointment' => $appointment, 'status' => 'rejected'], 'class' => 'form')) !!}
+                                                {!! Form::submit('Reject', ['class' => 'bg-indigo-500 text-white px-4 py-2 border rounded-md hover:text-black'] ) !!}
+                                            {{ Form::close() }}
+                                        @endif
+                                    @endrole
                                 </td>
                             </tr>
                         @endforeach

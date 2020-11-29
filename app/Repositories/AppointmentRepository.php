@@ -37,6 +37,21 @@ class AppointmentRepository extends AbstractRepository
     }
 
     /**
+     * @param Appointment $appointment
+     * @param array $appointmentData
+     * @return Appointment
+     */
+    public function updateAppointmentStatus(Appointment $appointment, array $appointmentData): Appointment
+    {
+        $appointmentStatus = AppointmentStatus::where('name', $appointmentData['status'])->firstOrFail();
+
+        $appointment->appointment_status_id = $appointmentStatus->id;
+        $appointment->save();
+
+        return $appointment;
+    }
+
+    /**
      * @param array $appointmentData
      * @return bool
      */
